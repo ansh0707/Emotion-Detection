@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 import cv2
 import numpy as np
 from tensorflow.keras.models import Sequential
@@ -84,54 +85,130 @@ def emotion_recog(frame):
     return frame, detected_emotion
 
 
+
 def main():
-    st.title("Text and Image Emotion Detection")
-
+    with st.sidebar:
+        selected =option_menu(
+            menu_title=None,
+            options=["TEXT", "IMAGE", "CONTACT"],
+            icons=["cursor-text","card-image","person-lines-fill"],
+            default_index=0,
+            styles={
+                "container" : {"padding": "0!important", "background-color":"white","border":"2px solid" , "color":"orange",},
+                "icon":{"color":"orange","font-size":"25px"},
+                "nav-link":{
+                    "font-size":"25px",
+                    "text-align":"left",
+                    "margin":"0px",
+                    "--hover-color":"#eee",
+                },
+                "nav-link-selected":{"background-color":"green"},
+            },
+        )
+    
     # Text Emotion Detection
-    st.header("Text Emotion Detection")
-    with st.form(key='text_emotion_form'):
-        raw_text = st.text_area("Type Here")
-        submit_text = st.form_submit_button(label='Submit')
+    
+    if selected=="TEXT":
+        st.header("Text Emotion Detection")
 
-    if submit_text:
-        col1, col2 = st.columns(2)
-        prediction = predict_emotions(raw_text)
-        probability = get_prediction_proba(raw_text)
+        with st.form(key='text_emotion_form'):
+            raw_text = st.text_area("**Type Here**")
+            submit_text = st.form_submit_button(label='**Submit**')
 
-        with col1:
-            st.success("Original Text")
-            st.write(raw_text)
+        if submit_text:
+            col1, col2 = st.columns(2)
+            prediction = predict_emotions(raw_text)
+            probability = get_prediction_proba(raw_text)
 
-            st.success("Prediction")
-            emoji_icon = emotions_emoji_dict[prediction]
-            st.write("{}:{}".format(prediction, emoji_icon))
-            st.write("Confidence:{}".format(np.max(probability)))
+            with col1:
+                st.success("**Original Text**")
+                st.write(raw_text)
 
-        with col2:
-            st.success("Prediction Probability")
-            proba_df = pd.DataFrame(probability, columns=pipe_lr.classes_)
-            proba_df_clean = proba_df.T.reset_index()
-            proba_df_clean.columns = ["emotions", "probability"]
+                st.success("**Prediction**")
+                emoji_icon = emotions_emoji_dict[prediction]
+                st.write("{}:{}".format(prediction, emoji_icon))
+                st.write("**Confidence:{}**".format(np.max(probability)*100),"%")
 
-            fig = alt.Chart(proba_df_clean).mark_bar().encode(x='emotions', y='probability', color='emotions')
-            st.altair_chart(fig, use_container_width=True)
+            with col2:
+                st.success("**Prediction Probability**")
+                proba_df = pd.DataFrame(probability, columns=pipe_lr.classes_)
+                proba_df_clean = proba_df.T.reset_index()
+                proba_df_clean.columns = ["emotions", "probability"]
 
+                fig = alt.Chart(proba_df_clean).mark_bar().encode(x='emotions', y='probability', color='emotions')
+                st.altair_chart(fig, use_container_width=True)
+    
+    if selected == "IMAGE":
     # Image Emotion Recognition
-    st.header("Image Emotion Recognition")
-    uploaded_file = st.file_uploader("Choose an image...", type=['jpg', 'png'])
+        st.header("Image Emotion Recognition")
+        uploaded_file = st.file_uploader("**Choose an image...**", type=['jpg', 'png'])
 
-    if uploaded_file is not None:
-        file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-        frame = cv2.imdecode(file_bytes, 1)
-        result, predicted_emotion = emotion_recog(frame)
+        if uploaded_file is not None:
+            file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+            frame = cv2.imdecode(file_bytes, 1)
+            result, predicted_emotion = emotion_recog(frame)
 
-        st.success("Uploaded Image")
-        st.image(result, caption='Uploaded Image', use_column_width=True)
+            st.success("**Uploaded Image**")
+            st.image(result, caption='**Uploaded Image**', use_column_width=True)
 
-        st.success("Prediction")
-        emoji_icon = emotions_emoji_dict_img[predicted_emotion]
-        st.write("{}:{}".format(predicted_emotion, emoji_icon))
+            st.success("**Prediction**")
+            emoji_icon = emotions_emoji_dict_img[predicted_emotion]
+            st.write("{}:{}".format(predicted_emotion, emoji_icon))
 
+    if selected == "CONTACT":
+        st.header("**Contributors**")
+        contributors = {
+            "ANSH VARSHNEY": {"email": "anshvarshney3@gmail.com", 
+                              "github_link": "https://github.com/ansh0707",
+                              "details":{
+                                  "Reg No" : "12006893",
+                                  "University":"Lovely Professional University"
+                              }},
+            "SARA BORA": {"email": "sarabora420@gmail.com", 
+                          "github_link": "https://github.com/sara-bora",
+                          "details":{
+                              "Reg No" : "12013194",
+                              "University":"Lovely Professional University"
+                          }},
+            "SARTHAK MISHRA": {"email": "sam4sarthak@gmail.com",
+                                "github_link": "https://github.com/SarthakMishra0307",
+                                "details":{
+                                    "Reg No" : "12018433",
+                                    "University":"Lovely Professional University"
+                                }},
+            "SATYAM DUBEY": {"email": "satyamdubey2988@gmail.com",
+                             "github_link": "https://github.com/dubeysatyam2002",
+                             "details":{
+                                    "Reg No" : "12014267",
+                                    "University":"Lovely Professional University"
+                            }},
+        }
+
+        for name, info in contributors.items():
+            st.markdown(
+                '''
+                <style>
+                div[data-testid="stExpander"] details div[data-testid="stExpanderContent"] summary {
+                    font-size: 1.2rem;
+                    color: blue;
+                    /* Add any other styles you want */
+                }
+                </style>
+                ''',
+                unsafe_allow_html=True
+            )
+            def local_css(file_name):
+                with open(file_name,'r') as f:
+                    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+            local_css("style.css")
+            with st.expander(name):
+                
+                st.write(f"**Email:** {info['email']}",unsafe_allow_html=True)
+                st.write(f"**GitHub:** [{name}]({info['github_link']})")
+                st.write(f"**Reg No:** {info['details']['Reg No']}")
+                st.write(f"**University:** {info['details']['University']}")
+                #st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == '__main__':
     main()
