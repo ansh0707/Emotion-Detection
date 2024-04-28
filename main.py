@@ -84,7 +84,11 @@ def emotion_recog(frame):
 
     return frame, detected_emotion
 
+def local_css(file_name):
+    with open(file_name,'r') as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
+local_css("style.css")
 
 def main():
     with st.sidebar:
@@ -186,11 +190,7 @@ def main():
                 ''',
                 unsafe_allow_html=True
             )
-            def local_css(file_name):
-                with open(file_name,'r') as f:
-                    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-            local_css("style.css")
+            
             with st.expander(name):
                 
                 st.write(f"**Email:** {info['email']}",unsafe_allow_html=True)
