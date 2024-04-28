@@ -93,17 +93,6 @@ def main():
             options=["TEXT", "IMAGE", "CONTACT"],
             icons=["cursor-text","card-image","person-lines-fill"],
             default_index=0,
-            styles={
-                "container" : {"padding": "0!important", "background-color":"white","border":"2px solid" , "color":"orange",},
-                "icon":{"color":"orange","font-size":"25px"},
-                "nav-link":{
-                    "font-size":"25px",
-                    "text-align":"left",
-                    "margin":"0px",
-                    "--hover-color":"#eee",
-                },
-                "nav-link-selected":{"background-color":"green"},
-            },
         )
     
     # Text Emotion Detection
